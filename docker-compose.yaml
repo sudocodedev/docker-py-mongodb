@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo
+    restart: always
+    container_name: god
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: baymax
+      MONGO_INITDB_ROOT_PASSWORD: abc123
+    ports:
+      - "27017:27017"
+    volumes:
+      - app-volume:/data/db
+    networks:
+      - app-net
+
+  app:
+    image: pymongo-crud
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: lord
+    env_file:
+      - .env
+    tty: true
+    stdin_open: true
+    networks:
+      - app-net
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - .:/app
+
+volumes:
+  app-volume:
+
+networks:
+  app-net:
